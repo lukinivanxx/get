@@ -8,13 +8,14 @@ void bin(unsigned int n){
     }
     cout << endl;
 }
+
 union essential{
     float input;
     unsigned int output;
 }data;
 int main(){
-    unsigned int n; cin >> n;
-    bin(n);
+//    unsigned int n; cin >> n;
+//    bin(n);
     cin >> data.input;
     bin(data.output);
     return 0;

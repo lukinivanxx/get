@@ -14,16 +14,15 @@ union essential{
     unsigned int output;
 }data;
 int main(){
-    unsigned long long k = 100;
     cout << fixed;
     cout.precision(2);
 
 //    unsigned int n; cin >> n; bin(n);
-    cin >> data.input; bin(data.output);
-    while (true){
-        cout << data.output * 10 << "    ";
-        data.output *= 10; bin(data.output);
-        cout << endl; Sleep(5);
+    cin >> data.input;
+    for (int i = 0;;i++){
+        data.input += 1;
+        cout << data.input << " "; bin(data.output);
+        Sleep(5);
     }
     return 0;
 }
