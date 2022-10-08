@@ -1,13 +1,19 @@
 #include <iostream>
 #include <fstream>
 #include <cmath>
+#include <chrono>
 
 using namespace std;
-ofstream ofs("pitest.txt");
+ofstream ofs("pitestoft.txt");
+
+double get_time() {
+return std::chrono::duration_cast<std::chrono::microseconds>
+(std::chrono::steady_clock::now().time_since_epoch()).count()/1e6;
+}
 
 void Nil (int iter){ // Ряды Нилаканта, дискретность
-
     float pi = 3.0; float ad = 2.0;
+    double st = get_time();
     for (int i = 0; i < iter; i++){
         if (i % 2 == 0)
             pi += 4.0 / ((ad) * (ad + 1) * (ad + 2));
@@ -15,36 +21,50 @@ void Nil (int iter){ // Ряды Нилаканта, дискретность
             pi -= 4.0 / ((ad) * (ad + 1) * (ad + 2));
         ad += 2;
     }
-     ofs << pi << " ";
+    double delta = get_time() - st;
+
+     ofs << delta << " ";
 }
 
 void L(float x){ // Становится точнее при больших х, чем Нилакант
 #define PI 3.14159265359
+    double st = get_time();
     float pi = x * sin((180.0 / x) * PI / 180);
-    ofs << pi << " ";
+    double delta = get_time() - st;
+
+     ofs << delta << " ";
 }
 
 void As(float x){ // Постоянная точность, через Арксинус
+    double st = get_time();
     float pi = 2 * (asin(sqrt(1 - pow(x, 2))) + abs(asin(x)));
-    ofs << pi << " ";
+    double delta = get_time() - st;
+
+     ofs << delta << " ";
 }
 
 void Leibnic(float iter){ // Ряды Лейбница, не очень точная формула из-за неточности float...
     float s = 0, pi;
+    double st = get_time();
     for (int i = 0; i < iter; i++){
         s += ((pow(-1, i))/((2 * i) + 1));
     }
     pi = s * 4;
-    ofs << pi << " ";
+    double delta = get_time() - st;
+
+     ofs << delta << " ";
 }
 
 void Euler(float iter){ // Произошла дискретность
     float s = 0, pi;
+    double st = get_time();
     for (int i = 1; i <= iter; i++){
         s += 1 / pow(i, 2);
     }
     pi = sqrt(6 * s);
-    ofs << pi << " ";
+    double delta = get_time() - st;
+
+     ofs << delta << " ";
 }
 
 int main(){
@@ -57,5 +77,6 @@ int main(){
     As(-1); As(0.5); As(0.75213); As(1); As(-0.5); As(-0.25); As(0); As(0.2139847); ofs << endl;
     ofs.close();
 }
+
 
 
