@@ -16,12 +16,14 @@ def binary(value):
     return [int(bit) for bit in bin(value)[2:].zfill(8)]
 #напряжение на выходе тройка-модуля
 def adc():
-    for i in range(0, 2 ** len(dac)):
-        gp.output(dac, binary(i))
-        sl(0.001)
+    k = 0
+    for i in range(7, -1, -1):
+        k += 2 ** i
+        gp.output(dac, binary(k))
+        sl(0.01)
         if gp.input(comp) == 0:
-            return i
-    raise ValueError
+            k -= 2 ** i
+    return k
 
 #блок try и finally
 try:
@@ -35,7 +37,7 @@ try:
         gp.output(leds, binary(q))
     print('Charging Done!')
     # заканчиваем зарядку и начинаем разрядку
-    gp.output(troyka, 0)
+    gp.output(troyka, gp.LOW)
     while q >= 256 * 0.02:
         q = adc()  # число делений q
         list_of_values.append(q)
@@ -45,13 +47,15 @@ try:
     print('End of discharging, experiment finished successfully!')
     end_of_exp = round(time() - start_of_exp, 5)
     f = open('data.txt', 'w')
-    for i in list_of_values: f.write(str(i) + '\n'); f.close() # записываем полученные данные в data.txt
+    for i in list_of_values: f.write(str(i) + '\n')
+    f.close() # записываем полученные данные в data.txt
     f = open('settings.txt', 'w')
-    f.write(str(3.3 / (2 ** 8 - 1)) + ' ' + str(1 / (end_of_exp / tick))); f.close() # записываем шаг квантования и среднюю частоту дискретизации в settings.txt
+    f.write(str(3.3 / (2 ** 8 - 1)) + ' ' + str(1 / (end_of_exp / tick)))
+    f.close() # записываем шаг квантования и среднюю частоту дискретизации в settings.txt
     print(f"Overall time: {round(end_of_exp, 3)}; T = {end_of_exp / tick}; f = {1 / (end_of_exp / tick)}; step = {3.3 / (2 ** 8 - 1)}.") # выводим результаты в консоль
-    pyplot.plot(list_of_values, [i * (end_of_exp / tick) for i in range(0, tick)])
+    pyplot.plot([i * (end_of_exp / tick) for i in range(0, tick)], list_of_values)
     pyplot.xlabel('t')
-    pyplot.ylable('Показания АЦП')
+    pyplot.ylabel('Показания АЦП')
     pyplot.show()
 finally:
     gp.output(troyka, 0)
